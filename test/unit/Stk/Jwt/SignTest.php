@@ -93,7 +93,7 @@ EOT1;
     public function testSignHMACRSA()
     {
         foreach ($this->probes as $p) {
-            $header  = new Header([], $p['alg']->getName());
+            $header  = new Header($p['alg']->getName());
             $payload = new Payload([
                 'sub'  => '1234567890',
                 'name' => "John Doe",
@@ -117,7 +117,7 @@ mDeb7B8R0dxHIyaFP8QOU4VzqgiPZUP+aw==
 -----END EC PRIVATE KEY-----
 EOT2;
 
-        $header  = new Header([], Algorithms::ES256()->getName());
+        $header  = new Header(Algorithms::ES256()->getName());
         $payload = new Payload([
             'sub'  => '1234567890',
             'name' => "John Doe",
@@ -133,7 +133,8 @@ EOT2;
         $pubkey = openssl_pkey_get_details($key);
         $pubkey = $pubkey["key"];
 
-        $this->assertTrue($encoder->verify($jwt, $pubkey, Algorithms::ES256()));
+        $jwt = $encoder->verify($jwt, $pubkey, Algorithms::ES256());
+        $this->assertInstanceOf(JWT::class, $jwt);
     }
 
     public function testSignES384()
@@ -147,15 +148,15 @@ OSDG49LE8xhlWX0mun34kcqnEfeO8Mc=
 -----END EC PRIVATE KEY-----
 EOT2;
 
-        $header  = new Header([], Algorithms::ES384()->getName());
+        $header  = new Header(Algorithms::ES384()->getName());
         $payload = new Payload([
             'sub'  => '1234567890',
             'name' => "John Doe",
             'iat'  => 1516239022
         ]);
 
-        $jwt = new JWT($header, $payload);
-        $token     = $jwt->sign($ecKey, Algorithms::ES384());
+        $encoder = new JWT($header, $payload);
+        $token   = $encoder->sign($ecKey, Algorithms::ES384());
         $this->assertIsString($token); // EC hashes have random val, its not possible to get repeatable results
 
         // derive public key and verify the signature
@@ -163,7 +164,8 @@ EOT2;
         $pubkey = openssl_pkey_get_details($key);
         $pubkey = $pubkey["key"];
 
-        $this->assertTrue($jwt->verify($token, $pubkey, Algorithms::ES384()));
+        $jwt = $encoder->verify($token, $pubkey, Algorithms::ES384());
+        $this->assertInstanceOf(JWT::class, $jwt);
     }
 
     public function testSignES512()
@@ -178,15 +180,15 @@ Tk8ghO68nAfBOV3jCugSetFGnN553ecS504/d0TvKw==
 -----END EC PRIVATE KEY-----
 EOT2;
 
-        $header  = new Header([], Algorithms::ES512()->getName());
+        $header  = new Header(Algorithms::ES512()->getName());
         $payload = new Payload([
             'sub'  => '1234567890',
             'name' => "John Doe",
             'iat'  => 1516239022
         ]);
 
-        $jwt   = new JWT($header, $payload);
-        $token = $jwt->sign($ecKey, Algorithms::ES512());
+        $encoder = new JWT($header, $payload);
+        $token   = $encoder->sign($ecKey, Algorithms::ES512());
         $this->assertIsString($token); // EC hashes have random val, its not possible to get repeatable results
 
         // derive public key and verify the signature
@@ -194,6 +196,7 @@ EOT2;
         $pubkey = openssl_pkey_get_details($key);
         $pubkey = $pubkey["key"];
 
-        $this->assertTrue($jwt->verify($token, $pubkey, Algorithms::ES512()));
+        $jwt = $encoder->verify($token, $pubkey, Algorithms::ES512());
+        $this->assertInstanceOf(JWT::class, $jwt);
     }
 }

@@ -9,7 +9,7 @@ class Header
     /** @var array */
     protected $headers = [];
 
-    public function __construct(array $headers = [], string $alg = null)
+    public function __construct(string $alg = null, array $headers = [])
     {
         $this->headers = $headers;
 
