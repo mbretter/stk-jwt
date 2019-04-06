@@ -4,6 +4,7 @@ namespace Stk\JWT;
 
 use InvalidArgumentException;
 use RuntimeException;
+use stdClass;
 
 /**
  * Class JWT
@@ -91,20 +92,18 @@ class JWT
             $alg = Algorithms::HS256();
         }
 
-        $parts = self::parseToken($token);
+        $parts = self::getParts($token);
         if ($parts === false) {
             throw new InvalidArgumentException('invalid token format');
         }
 
-        list ($header, $payload, $his) = $parts;
-
         $jwt = new self(
-            Header::createFromJson(self::b64UrlDecode($header)),
-            Payload::createFromJson(self::b64UrlDecode($payload)));
+            Header::createFromJson(self::b64UrlDecode($parts->header)),
+            Payload::createFromJson(self::b64UrlDecode($parts->payload)));
 
-        $hashData = sprintf('%s.%s', $header, $payload);
+        $hashData = sprintf('%s.%s', $parts->header, $parts->payload);
 
-        if (!$alg->verify($hashData, $secretKey, self::b64UrlDecode($his))) {
+        if (!$alg->verify($hashData, $secretKey, self::b64UrlDecode($parts->signature))) {
             throw new RuntimeException('invalid signature');
         }
 
@@ -184,6 +183,29 @@ class JWT
         return $this->payload->get($name);
     }
 
+    // helper
+
+    /**
+     * @param $token
+     *
+     * @return bool|stdClass
+     */
+    public static function getParts($token)
+    {
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return false;
+        }
+
+        $ret            = new stdClass();
+        $ret->header    = $parts[0];
+        $ret->payload   = $parts[1];
+        $ret->signature = $parts[2];
+
+        return $ret;
+    }
+
+
     /**
      * @param $data
      *
@@ -202,20 +224,5 @@ class JWT
     protected static function b64UrlDecode($data)
     {
         return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
-    }
-
-    /**
-     * @param $token
-     *
-     * @return array|bool
-     */
-    protected static function parseToken($token)
-    {
-        $parts = explode('.', $token);
-        if (count($parts) !== 3) {
-            return false;
-        }
-
-        return $parts;
     }
 }
