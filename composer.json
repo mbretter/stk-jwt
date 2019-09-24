@@ -23,7 +23,7 @@
     "test-unit": "phpunit -v --testsuite=\"unit tests\" --testdox --bootstrap test/unit/bootstrap.php",
     "test-reports": "phpunit --testsuite=\"unit tests\" --bootstrap test/unit/bootstrap.php --coverage-html reports/coverage --coverage-clover reports/clover.xml --coverage-crap4j reports/crap4j.xml --log-junit reports/junit.xml",
     "cs-check": "php-cs-fixer fix -v --dry-run --using-cache=no src",
-    "cs-fix": "php-cs-fixer fix -v --using-cache=no src",
+    "cs-fix": "php-cs-fixer fix -v --using-cache=no src"
   },
   "autoload": {
     "psr-4": {

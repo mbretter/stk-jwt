@@ -21,7 +21,6 @@ class Header
         if ($alg !== null) {
             $this->headers['alg'] = $alg;
         }
-
     }
 
     /**
@@ -68,5 +67,4 @@ class Header
 
         return $this->headers[$name];
     }
-
 }

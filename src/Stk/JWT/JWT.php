@@ -70,9 +70,11 @@ class JWT
             $alg = Algorithms::HS256();
         }
 
-        $hashData = sprintf('%s.%s',
+        $hashData = sprintf(
+            '%s.%s',
             self::b64UrlEncode($this->header->toJson()),
-            self::b64UrlEncode($this->payload->toJson()));
+            self::b64UrlEncode($this->payload->toJson())
+        );
 
         $sig = self::b64UrlEncode($alg->sign($hashData, $secretKey));
 
@@ -99,7 +101,8 @@ class JWT
 
         $jwt = new self(
             Header::createFromJson(self::b64UrlDecode($parts->header)),
-            Payload::createFromJson(self::b64UrlDecode($parts->payload)));
+            Payload::createFromJson(self::b64UrlDecode($parts->payload))
+        );
 
         $hashData = sprintf('%s.%s', $parts->header, $parts->payload);
 

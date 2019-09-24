@@ -54,5 +54,4 @@ class Alg
     {
         return $this->name;
     }
-
 }
