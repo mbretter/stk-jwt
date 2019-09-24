@@ -13,7 +13,7 @@ class VerifyTest extends Base
 
     protected $rsakey;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rsakey = <<<EOT1
 -----BEGIN PRIVATE KEY-----
@@ -88,52 +88,45 @@ EOT1;
         $this->assertInstanceOf(JWT::class, $jwt);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testVerifyInvalidTokenFormat()
     {
         $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
         $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
 
+        $this->expectException(InvalidArgumentException::class);
         $jwt = JWT::verify($token, $secret);
 
         $this->assertInstanceOf(JWT::class, $jwt);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testVerifyInvalidTokenFormatEmptyJson()
     {
         $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
         $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
 
+        $this->expectException(InvalidArgumentException::class);
+
         $jwt = JWT::verify($token, $secret);
 
         $this->assertInstanceOf(JWT::class, $jwt);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testVerifyInvalidJson()
     {
         $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
         $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
+        $this->expectException(InvalidArgumentException::class);
 
         $jwt = JWT::verify($token, $secret);
 
         $this->assertInstanceOf(JWT::class, $jwt);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testVerifyInvalidSignature()
     {
         $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.kIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
         $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
+        $this->expectException(RuntimeException::class);
 
         $jwt = JWT::verify($token, $secret);
 

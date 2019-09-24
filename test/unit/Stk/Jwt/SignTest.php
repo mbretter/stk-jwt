@@ -13,7 +13,7 @@ class SignTest extends Base
 
     protected $rsakey;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rsakey = <<<EOT1
 -----BEGIN PRIVATE KEY-----
