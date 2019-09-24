@@ -29,11 +29,5 @@
     "psr-4": {
       "Stk\\": "src/Stk"
     }
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../immutable"
-    }
-  ]
+  }
 }
