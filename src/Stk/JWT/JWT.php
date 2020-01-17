@@ -82,7 +82,7 @@ class JWT
     }
 
     /**
-     * @param $token
+     * @param string $token
      * @param $secretKey
      * @param Alg|null $alg
      *
@@ -94,15 +94,9 @@ class JWT
             $alg = Algorithms::HS256();
         }
 
-        $parts = self::getParts($token);
-        if ($parts === false) {
-            throw new InvalidArgumentException('invalid token format');
-        }
+        $jwt = self::fromString($token);
 
-        $jwt = new self(
-            Header::createFromJson(self::b64UrlDecode($parts->header)),
-            Payload::createFromJson(self::b64UrlDecode($parts->payload))
-        );
+        $parts = self::getParts($token);
 
         $hashData = sprintf('%s.%s', $parts->header, $parts->payload);
 
@@ -111,6 +105,21 @@ class JWT
         }
 
         return $jwt;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return static
+     */
+    public static function fromString($token)
+    {
+        $parts = self::getParts($token);
+
+        return new self(
+            Header::createFromJson(self::b64UrlDecode($parts->header)),
+            Payload::createFromJson(self::b64UrlDecode($parts->payload))
+        );
     }
 
     // headers
@@ -179,6 +188,11 @@ class JWT
         return $this->getClaim('jti');
     }
 
+    public function getKid()
+    {
+        return $this->getClaim('kid');
+    }
+
     // generic
 
     public function getClaim($name)
@@ -191,13 +205,14 @@ class JWT
     /**
      * @param $token
      *
-     * @return bool|stdClass
+     * @return stdClass
+     * @throws InvalidArgumentException
      */
     public static function getParts($token)
     {
         $parts = explode('.', $token);
         if (count($parts) !== 3) {
-            return false;
+            throw new InvalidArgumentException('invalid token format');
         }
 
         $ret            = new stdClass();
