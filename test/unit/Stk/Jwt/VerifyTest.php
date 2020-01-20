@@ -130,7 +130,7 @@ EOT1;
 
         $jwt = JWT::verify($token, $secret);
 
-        $this->assertInstanceOf(JWT::class, $jwt);
+        $this->assertFalse($jwt);
     }
 
     public function testVerifyHMACRSA()
@@ -149,4 +149,30 @@ EOT1;
         }
     }
 
+    public function testValidate()
+    {
+        $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
+        $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
+
+        $res = JWT::validate($token, $secret);
+        $this->assertInstanceOf(JWT::class, $res);
+    }
+
+    public function testValidateFailed()
+    {
+        $token  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpaVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
+        $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
+
+        $res = JWT::validate($token, $secret);
+        $this->assertFalse($res);
+    }
+
+    public function testValidateWithInvalidTokenFormat()
+    {
+        $token  = 'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.1pkIXLcblcHuN12SioD-TeDSRXv3cWcM_JnOKw03XTg';
+        $secret = base64_decode('2Ro2rR9nCoCqYlEbhksPJDKaa4K3Lxdd/OgLI0LbD1I=');
+
+        $res = JWT::validate($token, $secret);
+        $this->assertFalse($res);
+    }
 }

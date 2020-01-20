@@ -2,6 +2,7 @@
 
 namespace Stk\JWT;
 
+use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 use stdClass;
@@ -82,11 +83,32 @@ class JWT
     }
 
     /**
+     * verify the token, return false on error
+     *
      * @param string $token
      * @param $secretKey
      * @param Alg|null $alg
      *
-     * @return bool|mixed
+     * @return bool|static
+     */
+    public static function validate($token, $secretKey, Alg $alg = null)
+    {
+        try {
+            return self::verify($token, $secretKey, $alg);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * verify the token, throw exception on error
+     *
+     * @param string $token
+     * @param $secretKey
+     * @param Alg|null $alg
+     *
+     * @return static
+     * @throws RuntimeException
      */
     public static function verify($token, $secretKey, Alg $alg = null)
     {
@@ -101,7 +123,7 @@ class JWT
         $hashData = sprintf('%s.%s', $parts->header, $parts->payload);
 
         if (!$alg->verify($hashData, $secretKey, self::b64UrlDecode($parts->signature))) {
-            throw new RuntimeException('invalid signature');
+            throw new RuntimeException('token validation failed');
         }
 
         return $jwt;
@@ -134,6 +156,13 @@ class JWT
         return $this->getHeader('cty');
     }
 
+    // some well known headers
+
+    public function getKid()
+    {
+        return $this->getHeader('kid');
+    }
+
     /**
      * do not rely on the alg header field when verifying, this might be forged
      *
@@ -151,7 +180,7 @@ class JWT
         return $this->header->get($name);
     }
 
-    // claims
+    // some well known claims
 
     public function getIssuer()
     {
@@ -186,11 +215,6 @@ class JWT
     public function getId()
     {
         return $this->getClaim('jti');
-    }
-
-    public function getKid()
-    {
-        return $this->getHeader('kid');
     }
 
     // generic
