@@ -190,7 +190,7 @@ class JWT
 
     public function getKid()
     {
-        return $this->getClaim('kid');
+        return $this->getHeader('kid');
     }
 
     // generic
