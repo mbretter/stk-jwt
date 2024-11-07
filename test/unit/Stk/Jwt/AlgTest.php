@@ -73,7 +73,7 @@ class AlgTest extends Base
         $key2 = $alg->genKey();
 
         $this->assertNotEquals($key1, $key2);
-        $this->assertStringStartsWith('-----BEGIN EC PRIVATE KEY-----', $key1);
+        $this->assertStringStartsWith('-----BEGIN PRIVATE KEY-----', $key1);
     }
 
     public function testES384KeyGen()
@@ -83,7 +83,7 @@ class AlgTest extends Base
         $key2 = $alg->genKey();
 
         $this->assertNotEquals($key1, $key2);
-        $this->assertStringStartsWith('-----BEGIN EC PRIVATE KEY-----', $key1);
+        $this->assertStringStartsWith('-----BEGIN PRIVATE KEY-----', $key1);
     }
 
     public function testES512KeyGen()
@@ -93,7 +93,7 @@ class AlgTest extends Base
         $key2 = $alg->genKey();
 
         $this->assertNotEquals($key1, $key2);
-        $this->assertStringStartsWith('-----BEGIN EC PRIVATE KEY-----', $key1);
+        $this->assertStringStartsWith('-----BEGIN PRIVATE KEY-----', $key1);
     }
 
     public function testDerivePublicKey()
